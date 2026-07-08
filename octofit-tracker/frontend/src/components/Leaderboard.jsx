@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react'
 
-import { fetchCollection, getEndpointUrl } from '../api'
+import { normalizeCollection } from '../api'
+
+const codespaceName = import.meta.env.VITE_CODESPACE_NAME?.trim()
+const leaderboardEndpoint = codespaceName
+  ? `https://${import.meta.env.VITE_CODESPACE_NAME}-8000.app.github.dev/api/leaderboard/`
+  : 'http://localhost:8000/api/leaderboard/'
 
 function Leaderboard() {
   const [leaderboard, setLeaderboard] = useState([])
@@ -12,7 +17,14 @@ function Leaderboard() {
 
     async function loadLeaderboard() {
       try {
-        const items = await fetchCollection('leaderboard')
+        const response = await fetch(leaderboardEndpoint)
+
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`)
+        }
+
+        const payload = await response.json()
+        const items = normalizeCollection(payload)
 
         if (!ignore) {
           setLeaderboard(items)
@@ -40,7 +52,7 @@ function Leaderboard() {
           <p className="eyebrow">Competition</p>
           <h1>Leaderboard</h1>
         </div>
-        <span className="endpoint-pill">{getEndpointUrl('leaderboard')}</span>
+        <span className="endpoint-pill">{leaderboardEndpoint}</span>
       </div>
 
       {status === 'loading' && <p className="state-message">Loading leaderboard...</p>}

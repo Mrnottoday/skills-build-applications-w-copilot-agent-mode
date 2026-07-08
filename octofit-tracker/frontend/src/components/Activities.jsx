@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react'
 
-import { fetchCollection, getEndpointUrl } from '../api'
+import { normalizeCollection } from '../api'
+
+const codespaceName = import.meta.env.VITE_CODESPACE_NAME?.trim()
+const activitiesEndpoint = codespaceName
+  ? `https://${import.meta.env.VITE_CODESPACE_NAME}-8000.app.github.dev/api/activities/`
+  : 'http://localhost:8000/api/activities/'
 
 function Activities() {
   const [activities, setActivities] = useState([])
@@ -12,7 +17,14 @@ function Activities() {
 
     async function loadActivities() {
       try {
-        const items = await fetchCollection('activities')
+        const response = await fetch(activitiesEndpoint)
+
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`)
+        }
+
+        const payload = await response.json()
+        const items = normalizeCollection(payload)
 
         if (!ignore) {
           setActivities(items)
@@ -40,7 +52,7 @@ function Activities() {
           <p className="eyebrow">Training log</p>
           <h1>Activities</h1>
         </div>
-        <span className="endpoint-pill">{getEndpointUrl('activities')}</span>
+        <span className="endpoint-pill">{activitiesEndpoint}</span>
       </div>
 
       {status === 'loading' && <p className="state-message">Loading activities...</p>}

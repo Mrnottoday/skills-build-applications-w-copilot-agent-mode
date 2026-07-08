@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react'
 
-import { fetchCollection, getEndpointUrl } from '../api'
+import { normalizeCollection } from '../api'
+
+const codespaceName = import.meta.env.VITE_CODESPACE_NAME?.trim()
+const usersEndpoint = codespaceName
+  ? `https://${import.meta.env.VITE_CODESPACE_NAME}-8000.app.github.dev/api/users/`
+  : 'http://localhost:8000/api/users/'
 
 function Users() {
   const [users, setUsers] = useState([])
@@ -12,7 +17,14 @@ function Users() {
 
     async function loadUsers() {
       try {
-        const items = await fetchCollection('users')
+        const response = await fetch(usersEndpoint)
+
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`)
+        }
+
+        const payload = await response.json()
+        const items = normalizeCollection(payload)
 
         if (!ignore) {
           setUsers(items)
@@ -40,7 +52,7 @@ function Users() {
           <p className="eyebrow">Athletes</p>
           <h1>Users</h1>
         </div>
-        <span className="endpoint-pill">{getEndpointUrl('users')}</span>
+        <span className="endpoint-pill">{usersEndpoint}</span>
       </div>
 
       {status === 'loading' && <p className="state-message">Loading users...</p>}

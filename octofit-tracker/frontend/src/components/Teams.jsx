@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react'
 
-import { fetchCollection, getEndpointUrl } from '../api'
+import { normalizeCollection } from '../api'
+
+const codespaceName = import.meta.env.VITE_CODESPACE_NAME?.trim()
+const teamsEndpoint = codespaceName
+  ? `https://${import.meta.env.VITE_CODESPACE_NAME}-8000.app.github.dev/api/teams/`
+  : 'http://localhost:8000/api/teams/'
 
 function Teams() {
   const [teams, setTeams] = useState([])
@@ -12,7 +17,14 @@ function Teams() {
 
     async function loadTeams() {
       try {
-        const items = await fetchCollection('teams')
+        const response = await fetch(teamsEndpoint)
+
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`)
+        }
+
+        const payload = await response.json()
+        const items = normalizeCollection(payload)
 
         if (!ignore) {
           setTeams(items)
@@ -40,7 +52,7 @@ function Teams() {
           <p className="eyebrow">Groups</p>
           <h1>Teams</h1>
         </div>
-        <span className="endpoint-pill">{getEndpointUrl('teams')}</span>
+        <span className="endpoint-pill">{teamsEndpoint}</span>
       </div>
 
       {status === 'loading' && <p className="state-message">Loading teams...</p>}
