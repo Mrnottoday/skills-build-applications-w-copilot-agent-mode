@@ -1,0 +1,82 @@
+:root {
+  --text: #22312d;
+  --text-h: #11221d;
+  --muted: #66756f;
+  --bg: #edf3ee;
+  --surface: #fbfdf9;
+  --soft: #eef5e9;
+  --border: #cfdbd2;
+  --accent: #16725b;
+  --accent-strong: #0d5946;
+  --shadow: 0 18px 50px rgba(31, 49, 41, 0.12);
+  --sans: 'Avenir Next', Avenir, Verdana, sans-serif;
+  --heading: Georgia, 'Times New Roman', serif;
+
+  font: 16px/1.55 var(--sans);
+  letter-spacing: 0;
+  color-scheme: light dark;
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: light;
+  }
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100svh;
+  background:
+    radial-gradient(circle at top left, rgba(231, 164, 69, 0.22), transparent 34rem),
+    linear-gradient(180deg, #f7faf2, var(--bg));
+}
+
+#root {
+  min-height: 100svh;
+}
+
+h1,
+h2 {
+  font-family: var(--heading);
+  font-weight: 700;
+  color: var(--text-h);
+  letter-spacing: 0;
+}
+
+h1 {
+  margin: 0;
+  font-size: 2.9rem;
+  line-height: 1.05;
+}
+
+h2 {
+  margin: 0;
+  font-size: 1.35rem;
+  line-height: 1.2;
+}
+
+p {
+  margin: 0;
+}
+
+button,
+a {
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease;
+}
+
+@media (max-width: 760px) {
+  h1 {
+    font-size: 2.15rem;
+  }
+}
